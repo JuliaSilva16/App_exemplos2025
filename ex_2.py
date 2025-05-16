@@ -1,14 +1,7 @@
 import flet as ft
-from flet import AppBar, ElevatedButton,Text, View
-from flet.core import page
+from flet import AppBar,Text, View
 from flet.core.colors import Colors
-
-class User():
-    def __init__(self, titulo,descricao,categoria, autor):
-        self.titulo = titulo
-        self.descricao = descricao
-        self.categoria = categoria
-        self.autor = autor
+from models import *
 
 def main(page: ft.Page):
     page.title = "Livros"
@@ -18,18 +11,18 @@ def main(page: ft.Page):
     lista = []
 
     def salvar_livros(e):
-        if input_titulo.value == '':
+        if input_titulo.value == '' or input_descricao.value == '' or input_categoria.value == '' or input_autor.value == '':
             page.overlay.append(msg_error)
             msg_error.open = True
             page.update()
         else:
-            obj_user = User(
+            livros = Livro (
                 titulo=input_titulo.value,
                 descricao=input_descricao.value,
                 categoria=input_categoria.value,
                 autor=input_autor.value
             )
-            lista.append(obj_user)
+            livros.save()
             input_titulo.value = ''
             input_descricao.value = ''
             input_categoria.value = ''
@@ -38,11 +31,19 @@ def main(page: ft.Page):
             msg_sucesso.open = True
             page.update()
 
+    def detalhes (titulo,descricao,categoria,autor):
+        txt_titulo.value = titulo
+        txt_descricao.value = descricao
+        txt_categoria.value = categoria
+        txt_autor.value = autor
+
+        page.go("/terceira")
+
     def exibir_lista(e):
         lv_nome.controls.clear()
         for user in lista:
             lv_nome.controls.append(
-                ft.Text(value=
+                ft.ListeTile(value=
                         f"Título:{user.titulo} \n "
                         f"Descrição: {user.descricao} \n"
                         f"Categoria: {user.categoria} \n"
@@ -110,9 +111,6 @@ def main(page: ft.Page):
         page.update()
 
 
-
-
-
     def voltar(e):
         page.views.pop()
         top_view = page.views[-1]
@@ -128,6 +126,10 @@ def main(page: ft.Page):
     lv_nome = ft.ListView(
         height=500
     )
+    txt_titulo = ft.Text
+    txt_descricao = ft.Text
+    txt_categoria = ft.Text
+    txt_autor = ft.Text
 
     page.on_route_change = gerencia_rotas
     page.on_view_pop = voltar
