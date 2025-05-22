@@ -65,7 +65,7 @@ def main(page: ft.Page):
             View(
                 "/",
                 [
-                    AppBar(title=Text("Home"), bgcolor=Colors.PRIMARY_CONTAINER),
+                    AppBar(title=Text("LIVROS: CADASTRO "), bgcolor=Colors.PRIMARY_CONTAINER),
                     input_titulo,
                     input_descricao,
                     input_categoria,

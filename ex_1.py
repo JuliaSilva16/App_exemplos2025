@@ -73,7 +73,7 @@ def main(page: ft.Page):
             View(
                 "/",
                 [
-                    AppBar(title=Text("Home"), bgcolor=Colors.PRIMARY_CONTAINER),
+                    AppBar(title=Text("USÚARIO: CADASTRO"), bgcolor=Colors.PRIMARY_CONTAINER),
                     input_nome,
                     input_profissao,
                     input_salario,
