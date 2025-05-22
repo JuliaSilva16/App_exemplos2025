@@ -1,6 +1,8 @@
 import flet as ft
 from flet import AppBar,Text, View
 from flet.core.colors import Colors
+from sqlalchemy import select
+
 from models import *
 
 def main(page: ft.Page):
@@ -37,33 +39,21 @@ def main(page: ft.Page):
         txt_categoria.value = categoria
         txt_autor.value = autor
 
-        page.go("/terceira")
+        page.go("/detalhes_livro")
 
     def exibir_lista(e):
-        lv_nome.controls.clear()
-        for user in lista:
-            lv_nome.controls.append(
-                ft.ListeTile(value=
-                        f"Título:{user.titulo} \n "
-                        f"Descrição: {user.descricao} \n"
-                        f"Categoria: {user.categoria} \n"
-                        f"Autor: {user.autor} \n\n"
+        lv.controls.clear()
+        sql_livro = select(Livro)
+        resultado_livro = db_session.execute(sql_livro).scalars()
 
-                        )
-            )
-        page.update()
-
-    def vizualizar_detalhe(e):
-        for livro in lista:
-            lv_nome.controls.append(
+        for livro in resultado_livro:
+            lv.controls.append(
                 ft.ListTile(
-                    leading=ft.Icon(ft.Icons.BOOK),
-                    title=ft.Text(f"{livro.titulo}"),
-                    subtitle=ft.Text(f"{livro.autor}"),
+                    title=ft.Text(f"Título: {livro.titulo}"),
                     trailing=ft.PopupMenuButton(
                         icon=ft.Icons.MORE_VERT,
                         items=[
-                            ft.PopupMenuItem(text="Detalhes", on_click=lambda _: page.go("/terceira"))
+                            ft.PopupMenuItem(text="Ver", on_click=lambda _, l=livro: detalhes(l.titulo, l.descricao, l.categoria, l.autor)),
                         ]
                     )
                 )
@@ -76,36 +66,41 @@ def main(page: ft.Page):
                 "/",
                 [
                     AppBar(title=Text("Home"), bgcolor=Colors.PRIMARY_CONTAINER),
-                    input_titulo,input_descricao, input_categoria, input_autor,
-                    ft.Button(text='Salvar', on_click=lambda _: salvar_livros(e)),
-                    ft.Button(text='Exibir Lista', on_click=lambda _: page.go('/segunda')),
+                    input_titulo,
+                    input_descricao,
+                    input_categoria,
+                    input_autor,
+                    ft.Button(
+                        text='Salvar', on_click=lambda _: salvar_livros(e)),
+                    ft.Button(
+                        text='Exibir Lista', on_click=lambda _: page.go('/lista_livro')),
                 ],
             )
         )
 
-        if page.route == "/segunda" or page.route == "/terceira":
-            vizualizar_detalhe(e)
-            page.views.append(
-                View(
-                    "/segunda",
-                    [
-                        AppBar(title=Text("LIVROS"), bgcolor=Colors.SECONDARY_CONTAINER),
-                        lv_nome,
-                    ],
-                )
-            )
-        page.update()
-
-
-        if page.route == "/terceira":
+        if page.route == "/lista_livro" or page.route == "/detalhes_livro":
             exibir_lista(e)
             page.views.append(
                 View(
-                    "/terceira",
+                    "/lista_livro",
+                    [
+                        AppBar(title=Text("LIVROS"), bgcolor=Colors.SECONDARY_CONTAINER),
+                        lv,
+                    ]
+                )
+            )
+
+        if page.route == "/detalhes_livro":
+            page.views.append(
+                View(
+                    "/detalhes_livro",
                     [
                         AppBar(title=Text("DETALHES "), bgcolor=Colors.SECONDARY_CONTAINER),
-                        lv_nome,
-                    ],
+                        txt_titulo,
+                        txt_descricao,
+                        txt_categoria,
+                        txt_autor,
+                    ]
                 )
             )
         page.update()
@@ -120,12 +115,19 @@ def main(page: ft.Page):
     input_descricao = ft.TextField(label="Digite a descrição: ")
     input_categoria = ft.TextField(label="Digite a categoria: ")
     input_autor = ft.TextField(label="Digite o autor: ")
-    msg_sucesso = ft.SnackBar(content=ft.Text("Salvo com sucesso!"), bgcolor=Colors.GREEN)
-    msg_error = ft.SnackBar(content=ft.Text("Não pode estar vazio!"), bgcolor=Colors.RED)
-
-    lv_nome = ft.ListView(
+    lv = ft.ListView(
         height=500
     )
+    msg_sucesso = ft.SnackBar(
+        content=ft.Text('Salvo com sucesso!'),
+        bgcolor=Colors.GREEN
+    )
+
+    msg_error = ft.SnackBar(
+        content=ft.Text('Não pode estar vazio!'),
+        bgcolor=Colors.RED
+    )
+
     txt_titulo = ft.Text
     txt_descricao = ft.Text
     txt_categoria = ft.Text

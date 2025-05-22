@@ -82,7 +82,7 @@ def main(page: ft.Page):
                         on_click=lambda _: salvar(e)),
                     ft.Button(
                         "Exibir lista",
-                        on_click=lambda _: page.go("/detalhe_usuario")
+                        on_click=lambda _: page.go("/lista_usuario")
                     )
                 ],
 
@@ -103,7 +103,7 @@ def main(page: ft.Page):
         if page.route == "/detalhe_usuario":
             page.views.append(
                 View  (
-                    "/gerenciar_rotas",
+                    "/detalhe usuario",
                     [
                         AppBar(title=Text("Detalhes"), bgcolor=Colors.SECONDARY_CONTAINER),
                         txt_nome,
@@ -124,21 +124,18 @@ def main(page: ft.Page):
     input_nome = ft.TextField(label="Nome")
     input_profissao = ft.TextField(label="Profissão")
     input_salario = ft.TextField(label="Salário")
-    msg_sucesso = ft.SnackBar( content=ft.Text("Salvo com sucesso!"), bgcolor=Colors.GREEN)
-    msg_error =  ft.SnackBar( content=ft.Text("Não pode estar vazio!"), bgcolor=Colors.RED)
-
 
     lv = ft.ListView(
         height=500
     )
 
     msg_sucesso = ft.SnackBar(
-        content=msg_sucesso,
+        content=ft.Text('Salvo com sucesso!'),
         bgcolor=Colors.GREEN
     )
 
     msg_error = ft.SnackBar(
-        content=msg_error,
+        content=ft.Text('Não pode estar vazio!'),
         bgcolor=Colors.RED
     )
 
